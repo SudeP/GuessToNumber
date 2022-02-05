@@ -120,6 +120,8 @@ namespace GuessToNumber.Gateway
                 SocketData response = CreateLobby(socketData, handledSocket);
 
                 handledSocket.Socket.Send(response.JsonString().ToByteArray(Encoding));
+
+                return;
             }
             //Join to there lobby
             else if (socketData.destination == SpecificIdentity.JoinLobby)
@@ -127,20 +129,45 @@ namespace GuessToNumber.Gateway
                 SocketData response = JoinLobby(socketData, handledSocket);
 
                 handledSocket.Socket.Send(response.JsonString().ToByteArray(Encoding));
+
+                return;
             }
             // send message to all client (with me)
             else if (socketData.destination == SpecificIdentity.WithMe)
             {
                 SendDataAllClients(socketData, handledSocket, false);
+
+                return;
             }
             // send message to all client (without me)
             else if (socketData.destination == SpecificIdentity.WithoutMe)
             {
                 SendDataAllClients(socketData, handledSocket, true);
+
+                return;
             }
-            //others
-            else
+            //send message to Server
+            else if (socketData.destination == SpecificIdentity.ServerId)
+            {
                 OnRecieveServer?.Invoke(socketData, this);
+
+                return;
+            }
+            //send (client/server) to client
+            else if (socketData.destination > SpecificIdentity.ServerId)
+            {
+                if (lobbies.TryGetValue(handledSocket.AuthorizationKey, out YuppiLobby targetLobby))
+                {
+                    if (targetLobby.Clients.TryGetValue(socketData.destination, out YuppiSocket target))
+                    {
+                        target.Socket.Send(socketData.JsonString().ToByteArray(Encoding));
+
+                        return;
+                    }
+                }
+            }
+
+            OnLog?.Invoke($@"Unhandled identity. İdentity = " + socketData.destination, "YuppiServer_OnHandleRecieve", true);
         }
 
         private SocketData CreateLobby(SocketData request, YuppiSocket socket)

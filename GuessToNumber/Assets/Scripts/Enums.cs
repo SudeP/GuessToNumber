@@ -8,6 +8,9 @@ public enum AudioType
     Win,
     Lose
 }
+/// <summary>
+/// All Scenes
+/// </summary>
 public enum SceneType
 {
     None,
@@ -17,6 +20,9 @@ public enum SceneType
     JoinGameScene,
     GameScene
 }
+/// <summary>
+/// GameObjec Tags
+/// </summary>
 public static class Tags
 {
     public const string audioSourceEnabled = "audioSourceEnabled";

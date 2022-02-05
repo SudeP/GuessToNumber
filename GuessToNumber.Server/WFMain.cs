@@ -9,6 +9,7 @@ namespace GuessToNumber.Server
 {
     public partial class WFMain : Form
     {
+        #region Others
         public WFMain()
         {
             InitializeComponent();
@@ -19,17 +20,21 @@ namespace GuessToNumber.Server
         private YuppiServer server;
         private IPAddress ipAddress = IPAddress.Any;
         private int port = 7536;
+        #endregion
 
+        #region Server Manage
+        private void Server_OnRecieveServer(SocketData socketData, ISocket handledSocket)
+        {
+            Log(socketData.JsonString(), "Server_OnRecieveServer", false);
+
+        }
+        #endregion
+
+        #region Other
         private void Server_OnLog(string message, string stackTrace, bool isError)
         {
             Log(message, stackTrace, isError);
         }
-
-        private void Server_OnRecieveServer(SocketData socketData, ISocket handledSocket)
-        {
-            Log(socketData.JsonString(), "Server_OnRecieveServer", false);
-        }
-
         private void Log(string message, string trace, bool isError)
         {
             Invoke(new Action(() =>
@@ -166,5 +171,6 @@ namespace GuessToNumber.Server
             if (IPAddress.TryParse(msltfCustomIp.Text, out IPAddress newIpAddress))
                 ipAddress = newIpAddress;
         }
+        #endregion
     }
 }
