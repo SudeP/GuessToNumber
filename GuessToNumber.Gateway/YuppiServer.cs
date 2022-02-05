@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
@@ -13,39 +12,53 @@ namespace GuessToNumber.Gateway
     {
         public YuppiServer(IPEndPoint iPEndPoint, Encoding encoding) : base(iPEndPoint, encoding)
         {
-            lobbies = new ConcurrentDictionary<string, YuppiLobby>();
-            sockets = new ConcurrentDictionary<uint, YuppiSocket>();
-            OnRecieveListen += YuppiServer_OnHandleRecieve;
-        }
-
-        ~YuppiServer()
-        {
-            Stop();
         }
 
         public override event YuppiLogHandler OnLog;
         public event RecieveServerHandler OnRecieveServer;
-        private uint identity = SpecificIdentity.IdentitySeed;
+        private uint identity;
         private Task acceptHandleTask;
         private CancellationTokenSource acceptHandleTaskCancellationTokenSource;
-        public readonly ConcurrentDictionary<string, YuppiLobby> lobbies;
-        public readonly ConcurrentDictionary<uint, YuppiSocket> sockets;
+        public ConcurrentDictionary<string, YuppiLobby> lobbies;
+        public ConcurrentDictionary<uint, YuppiSocket> sockets;
 
         public new void Stop()
         {
             OnLog?.Invoke("Stopped server", "Stop", false);
 
-            if (acceptHandleTaskCancellationTokenSource != null && acceptHandleTaskCancellationTokenSource.IsCancellationRequested)
-                acceptHandleTaskCancellationTokenSource.Cancel(false);
-
             base.Stop();
+
+            if (acceptHandleTaskCancellationTokenSource != null && !acceptHandleTaskCancellationTokenSource.IsCancellationRequested)
+            {
+                acceptHandleTaskCancellationTokenSource.Cancel(false);
+                acceptHandleTaskCancellationTokenSource.Dispose();
+            }
+
+            if (sockets != null)
+                foreach (var socket in sockets)
+                    if (socket.Value != null && socket.Value.Socket != null)
+                        DestorySocket(socket.Value);
+
+
+            lobbies.Clear();
+            sockets.Clear();
+            lobbies = null;
+            sockets = null;
+            OnRecieveListen -= YuppiServer_OnHandleRecieve;
         }
 
         public override void Start()
         {
+            OnRecieveListen += YuppiServer_OnHandleRecieve;
+
             base.Start();
 
+            lobbies = new ConcurrentDictionary<string, YuppiLobby>();
+            sockets = new ConcurrentDictionary<uint, YuppiSocket>();
+
             OnLog?.Invoke("Started server", "Start", false);
+
+            identity = SpecificIdentity.IdentitySeed;
 
             Id = GetNewIdentity();
             Pipline.Id = Id;
@@ -141,9 +154,7 @@ namespace GuessToNumber.Gateway
                 return response;
             }
 
-            JObject jObject = request.data as JObject;
-
-            LobbySettings settings = jObject.ToObject<LobbySettings>();
+            LobbySettings settings = request.data.JsonConvert<LobbySettings>();
 
             //key have not be null
             if (string.IsNullOrEmpty(settings.AuthorizationKey) || string.IsNullOrWhiteSpace(settings.AuthorizationKey))

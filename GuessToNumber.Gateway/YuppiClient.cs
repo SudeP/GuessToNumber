@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +9,6 @@ namespace GuessToNumber.Gateway
         public YuppiClient(IPEndPoint iPEndPoint, Encoding encoding) : base(iPEndPoint, encoding)
         {
             IsClient = true;
-            OnRecieveListen += YuppiClient_OnHandleRecieve;
         }
 
         public override event YuppiLogHandler OnLog;
@@ -19,6 +17,8 @@ namespace GuessToNumber.Gateway
 
         public override void Start()
         {
+            OnRecieveListen += YuppiClient_OnHandleRecieve;
+
             base.Start();
 
             Task.Factory.StartNew(() =>
@@ -28,6 +28,12 @@ namespace GuessToNumber.Gateway
 
                 StartListen(Id, Pipline);
             });
+        }
+        public override void Stop()
+        {
+            base.Stop();
+
+            OnRecieveListen -= YuppiClient_OnHandleRecieve;
         }
 
         public void CreateLobby(LobbySettings lobbySettings)

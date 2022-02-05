@@ -12,14 +12,9 @@ namespace GuessToNumber.Server
         public UCTestClient()
         {
             InitializeComponent();
-
-            client = new YuppiClient(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 7536), Encoding.UTF8);
-
-            client.OnLog += Client_OnLog;
-            client.OnRecieveClient += Client_OnRecieveClient;
         }
 
-        private readonly YuppiClient client;
+        private YuppiClient client;
 
         private void Client_OnRecieveClient(SocketData socketData)
         {
@@ -37,7 +32,7 @@ namespace GuessToNumber.Server
             {
                 var old = rtbxLog.Text.Length;
 
-                string text = $@"{DateTime.Now.ToShortTimeString()}|{trace}|{message}{Environment.NewLine}";
+                string text = $@"{DateTime.Now.ToLongTimeString()}|{trace}|{message}{Environment.NewLine}";
 
                 rtbxLog.Text += text;
 
@@ -68,6 +63,11 @@ namespace GuessToNumber.Server
             mfbtnCreateLobby.Enabled = true;
             mfbtnJoinLobby.Enabled = true;
 
+            client = new YuppiClient(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 7536), Encoding.UTF8);
+
+            client.OnLog += Client_OnLog;
+            client.OnRecieveClient += Client_OnRecieveClient;
+
             client.Start();
 
             mlblClientId.Text = $@"Runnig";
@@ -87,6 +87,11 @@ namespace GuessToNumber.Server
             mfbtnClientToClient.Enabled = false;
 
             client.Stop();
+
+            client.OnLog -= Client_OnLog;
+            client.OnRecieveClient -= Client_OnRecieveClient;
+
+            client.Dispose();
 
             mlblClientId.Text = $@"Stopped";
             mlblClientId.ForeColor = Color.Red;

@@ -1,4 +1,6 @@
 ﻿
+using System.Windows.Forms;
+
 namespace GuessToNumber.Server
 {
     partial class WFMain
@@ -29,24 +31,30 @@ namespace GuessToNumber.Server
         /// </summary>
         private void InitializeComponent()
         {
-            this.mtc = new MaterialSkin.Controls.MaterialTabControl();
+            this.mtc = new System.Windows.Forms.TabControl();
             this.mtpLog = new System.Windows.Forms.TabPage();
-            this.mchbxScrollToEnd = new MaterialSkin.Controls.MaterialCheckBox();
+            this.mchbxScrollToEnd = new System.Windows.Forms.CheckBox();
             this.rtbxLog = new System.Windows.Forms.RichTextBox();
             this.mtpLobbies = new System.Windows.Forms.TabPage();
-            this.mfbtnRefreshLobbies = new MaterialSkin.Controls.MaterialFlatButton();
-            this.mlblClientCount = new MaterialSkin.Controls.MaterialLabel();
-            this.mlblLobbyCount = new MaterialSkin.Controls.MaterialLabel();
+            this.mfbtnRefreshLobbies = new System.Windows.Forms.Button();
+            this.mlblClientCount = new System.Windows.Forms.Label();
+            this.mlblLobbyCount = new System.Windows.Forms.Label();
             this.twLobbies = new System.Windows.Forms.TreeView();
             this.mtpStatus = new System.Windows.Forms.TabPage();
-            this.mlblStatu = new MaterialSkin.Controls.MaterialLabel();
-            this.mrbtnStopServer = new MaterialSkin.Controls.MaterialRaisedButton();
-            this.mrbtnStartServer = new MaterialSkin.Controls.MaterialRaisedButton();
+            this.msltfPort = new System.Windows.Forms.TextBox();
+            this.mlblPort = new System.Windows.Forms.Label();
+            this.msltfCustomIp = new System.Windows.Forms.TextBox();
+            this.mtbtnCustom = new System.Windows.Forms.RadioButton();
+            this.mtbtnLocalHost = new System.Windows.Forms.RadioButton();
+            this.mtbtnLocalIp = new System.Windows.Forms.RadioButton();
+            this.mtbtnAny = new System.Windows.Forms.RadioButton();
+            this.mlblStatu = new System.Windows.Forms.Label();
+            this.mrbtnStopServer = new System.Windows.Forms.Button();
+            this.mrbtnStartServer = new System.Windows.Forms.Button();
             this.tpClient1 = new System.Windows.Forms.TabPage();
-            this.tpClient2 = new System.Windows.Forms.TabPage();
-            this.mts = new MaterialSkin.Controls.MaterialTabSelector();
-            this.ucTestClient1 = new GuessToNumber.Server.UCTestClient();
             this.ucTestClient2 = new GuessToNumber.Server.UCTestClient();
+            this.tpClient2 = new System.Windows.Forms.TabPage();
+            this.ucTestClient1 = new GuessToNumber.Server.UCTestClient();
             this.mtc.SuspendLayout();
             this.mtpLog.SuspendLayout();
             this.mtpLobbies.SuspendLayout();
@@ -62,13 +70,11 @@ namespace GuessToNumber.Server
             this.mtc.Controls.Add(this.mtpStatus);
             this.mtc.Controls.Add(this.tpClient1);
             this.mtc.Controls.Add(this.tpClient2);
-            this.mtc.Depth = 0;
-            this.mtc.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.mtc.Location = new System.Drawing.Point(0, 114);
-            this.mtc.MouseState = MaterialSkin.MouseState.HOVER;
+            this.mtc.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mtc.Location = new System.Drawing.Point(0, 0);
             this.mtc.Name = "mtc";
             this.mtc.SelectedIndex = 0;
-            this.mtc.Size = new System.Drawing.Size(1200, 544);
+            this.mtc.Size = new System.Drawing.Size(1200, 658);
             this.mtc.TabIndex = 0;
             // 
             // mtpLog
@@ -79,7 +85,7 @@ namespace GuessToNumber.Server
             this.mtpLog.Location = new System.Drawing.Point(4, 28);
             this.mtpLog.Margin = new System.Windows.Forms.Padding(0);
             this.mtpLog.Name = "mtpLog";
-            this.mtpLog.Size = new System.Drawing.Size(1192, 512);
+            this.mtpLog.Size = new System.Drawing.Size(1192, 626);
             this.mtpLog.TabIndex = 0;
             this.mtpLog.Text = "Log";
             this.mtpLog.UseVisualStyleBackColor = true;
@@ -89,15 +95,11 @@ namespace GuessToNumber.Server
             this.mchbxScrollToEnd.AutoSize = true;
             this.mchbxScrollToEnd.Checked = true;
             this.mchbxScrollToEnd.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.mchbxScrollToEnd.Depth = 0;
-            this.mchbxScrollToEnd.Font = new System.Drawing.Font("Roboto", 10F);
+            this.mchbxScrollToEnd.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.mchbxScrollToEnd.Location = new System.Drawing.Point(8, 13);
             this.mchbxScrollToEnd.Margin = new System.Windows.Forms.Padding(0);
-            this.mchbxScrollToEnd.MouseLocation = new System.Drawing.Point(-1, -1);
-            this.mchbxScrollToEnd.MouseState = MaterialSkin.MouseState.HOVER;
             this.mchbxScrollToEnd.Name = "mchbxScrollToEnd";
-            this.mchbxScrollToEnd.Ripple = true;
-            this.mchbxScrollToEnd.Size = new System.Drawing.Size(107, 30);
+            this.mchbxScrollToEnd.Size = new System.Drawing.Size(106, 21);
             this.mchbxScrollToEnd.TabIndex = 1;
             this.mchbxScrollToEnd.Text = "Scroll to end";
             this.mchbxScrollToEnd.UseVisualStyleBackColor = true;
@@ -109,7 +111,7 @@ namespace GuessToNumber.Server
             this.rtbxLog.ForeColor = System.Drawing.Color.White;
             this.rtbxLog.Location = new System.Drawing.Point(8, 46);
             this.rtbxLog.Name = "rtbxLog";
-            this.rtbxLog.Size = new System.Drawing.Size(1166, 458);
+            this.rtbxLog.Size = new System.Drawing.Size(1166, 572);
             this.rtbxLog.TabIndex = 0;
             this.rtbxLog.Text = "";
             // 
@@ -123,7 +125,7 @@ namespace GuessToNumber.Server
             this.mtpLobbies.Location = new System.Drawing.Point(4, 28);
             this.mtpLobbies.Margin = new System.Windows.Forms.Padding(0);
             this.mtpLobbies.Name = "mtpLobbies";
-            this.mtpLobbies.Size = new System.Drawing.Size(1192, 512);
+            this.mtpLobbies.Size = new System.Drawing.Size(1192, 626);
             this.mtpLobbies.TabIndex = 1;
             this.mtpLobbies.Text = "Lobbies";
             this.mtpLobbies.UseVisualStyleBackColor = true;
@@ -132,14 +134,11 @@ namespace GuessToNumber.Server
             // 
             this.mfbtnRefreshLobbies.AutoSize = true;
             this.mfbtnRefreshLobbies.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.mfbtnRefreshLobbies.Depth = 0;
             this.mfbtnRefreshLobbies.ForeColor = System.Drawing.Color.White;
             this.mfbtnRefreshLobbies.Location = new System.Drawing.Point(602, 100);
             this.mfbtnRefreshLobbies.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
-            this.mfbtnRefreshLobbies.MouseState = MaterialSkin.MouseState.HOVER;
             this.mfbtnRefreshLobbies.Name = "mfbtnRefreshLobbies";
-            this.mfbtnRefreshLobbies.Primary = false;
-            this.mfbtnRefreshLobbies.Size = new System.Drawing.Size(109, 36);
+            this.mfbtnRefreshLobbies.Size = new System.Drawing.Size(127, 29);
             this.mfbtnRefreshLobbies.TabIndex = 3;
             this.mfbtnRefreshLobbies.Text = "Refresh Data";
             this.mfbtnRefreshLobbies.UseVisualStyleBackColor = true;
@@ -148,68 +147,150 @@ namespace GuessToNumber.Server
             // mlblClientCount
             // 
             this.mlblClientCount.AutoSize = true;
-            this.mlblClientCount.Depth = 0;
-            this.mlblClientCount.Font = new System.Drawing.Font("Roboto", 11F);
+            this.mlblClientCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
             this.mlblClientCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.mlblClientCount.Location = new System.Drawing.Point(598, 60);
-            this.mlblClientCount.MouseState = MaterialSkin.MouseState.HOVER;
             this.mlblClientCount.Name = "mlblClientCount";
-            this.mlblClientCount.Size = new System.Drawing.Size(0, 19);
+            this.mlblClientCount.Size = new System.Drawing.Size(0, 18);
             this.mlblClientCount.TabIndex = 2;
             // 
             // mlblLobbyCount
             // 
             this.mlblLobbyCount.AutoSize = true;
-            this.mlblLobbyCount.Depth = 0;
-            this.mlblLobbyCount.Font = new System.Drawing.Font("Roboto", 11F);
+            this.mlblLobbyCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
             this.mlblLobbyCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.mlblLobbyCount.Location = new System.Drawing.Point(598, 20);
-            this.mlblLobbyCount.MouseState = MaterialSkin.MouseState.HOVER;
             this.mlblLobbyCount.Name = "mlblLobbyCount";
-            this.mlblLobbyCount.Size = new System.Drawing.Size(0, 19);
+            this.mlblLobbyCount.Size = new System.Drawing.Size(0, 18);
             this.mlblLobbyCount.TabIndex = 1;
             // 
             // twLobbies
             // 
-            this.twLobbies.Location = new System.Drawing.Point(8, 3);
+            this.twLobbies.Location = new System.Drawing.Point(3, 3);
             this.twLobbies.Name = "twLobbies";
-            this.twLobbies.Size = new System.Drawing.Size(557, 501);
+            this.twLobbies.Size = new System.Drawing.Size(557, 615);
             this.twLobbies.TabIndex = 0;
             // 
             // mtpStatus
             // 
             this.mtpStatus.AutoScroll = true;
+            this.mtpStatus.BackColor = System.Drawing.Color.White;
+            this.mtpStatus.Controls.Add(this.msltfPort);
+            this.mtpStatus.Controls.Add(this.mlblPort);
+            this.mtpStatus.Controls.Add(this.msltfCustomIp);
+            this.mtpStatus.Controls.Add(this.mtbtnCustom);
+            this.mtpStatus.Controls.Add(this.mtbtnLocalHost);
+            this.mtpStatus.Controls.Add(this.mtbtnLocalIp);
+            this.mtpStatus.Controls.Add(this.mtbtnAny);
             this.mtpStatus.Controls.Add(this.mlblStatu);
             this.mtpStatus.Controls.Add(this.mrbtnStopServer);
             this.mtpStatus.Controls.Add(this.mrbtnStartServer);
             this.mtpStatus.Location = new System.Drawing.Point(4, 28);
             this.mtpStatus.Margin = new System.Windows.Forms.Padding(0);
             this.mtpStatus.Name = "mtpStatus";
-            this.mtpStatus.Size = new System.Drawing.Size(1192, 512);
+            this.mtpStatus.Size = new System.Drawing.Size(1192, 626);
             this.mtpStatus.TabIndex = 2;
             this.mtpStatus.Text = "Status";
-            this.mtpStatus.UseVisualStyleBackColor = true;
+            // 
+            // msltfPort
+            // 
+            this.msltfPort.Location = new System.Drawing.Point(781, 126);
+            this.msltfPort.Name = "msltfPort";
+            this.msltfPort.Size = new System.Drawing.Size(102, 26);
+            this.msltfPort.TabIndex = 9;
+            this.msltfPort.Text = "7536";
+            this.msltfPort.TextChanged += new System.EventHandler(this.MsltfPort_TextChanged);
+            // 
+            // mlblPort
+            // 
+            this.mlblPort.AutoSize = true;
+            this.mlblPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
+            this.mlblPort.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.mlblPort.Location = new System.Drawing.Point(726, 126);
+            this.mlblPort.Name = "mlblPort";
+            this.mlblPort.Size = new System.Drawing.Size(48, 18);
+            this.mlblPort.TabIndex = 8;
+            this.mlblPort.Text = "Port : ";
+            // 
+            // msltfCustomIp
+            // 
+            this.msltfCustomIp.Enabled = false;
+            this.msltfCustomIp.Location = new System.Drawing.Point(516, 244);
+            this.msltfCustomIp.Name = "msltfCustomIp";
+            this.msltfCustomIp.Size = new System.Drawing.Size(102, 26);
+            this.msltfCustomIp.TabIndex = 7;
+            this.msltfCustomIp.Text = "0.0.0.0";
+            this.msltfCustomIp.TextChanged += new System.EventHandler(this.MsltfCustomIp_TextChanged);
+            // 
+            // mtbtnCustom
+            // 
+            this.mtbtnCustom.AutoSize = true;
+            this.mtbtnCustom.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.mtbtnCustom.Location = new System.Drawing.Point(424, 237);
+            this.mtbtnCustom.Margin = new System.Windows.Forms.Padding(0);
+            this.mtbtnCustom.Name = "mtbtnCustom";
+            this.mtbtnCustom.Size = new System.Drawing.Size(73, 21);
+            this.mtbtnCustom.TabIndex = 6;
+            this.mtbtnCustom.Text = "Custom";
+            this.mtbtnCustom.UseVisualStyleBackColor = true;
+            this.mtbtnCustom.CheckedChanged += new System.EventHandler(this.MtbtnCustom_CheckedChanged);
+            // 
+            // mtbtnLocalHost
+            // 
+            this.mtbtnLocalHost.AutoSize = true;
+            this.mtbtnLocalHost.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.mtbtnLocalHost.Location = new System.Drawing.Point(424, 195);
+            this.mtbtnLocalHost.Margin = new System.Windows.Forms.Padding(0);
+            this.mtbtnLocalHost.Name = "mtbtnLocalHost";
+            this.mtbtnLocalHost.Size = new System.Drawing.Size(82, 21);
+            this.mtbtnLocalHost.TabIndex = 5;
+            this.mtbtnLocalHost.Text = "localhost";
+            this.mtbtnLocalHost.UseVisualStyleBackColor = true;
+            this.mtbtnLocalHost.CheckedChanged += new System.EventHandler(this.MtbtnLocalHost_CheckedChanged);
+            // 
+            // mtbtnLocalIp
+            // 
+            this.mtbtnLocalIp.AutoSize = true;
+            this.mtbtnLocalIp.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.mtbtnLocalIp.Location = new System.Drawing.Point(424, 154);
+            this.mtbtnLocalIp.Margin = new System.Windows.Forms.Padding(0);
+            this.mtbtnLocalIp.Name = "mtbtnLocalIp";
+            this.mtbtnLocalIp.Size = new System.Drawing.Size(86, 21);
+            this.mtbtnLocalIp.TabIndex = 4;
+            this.mtbtnLocalIp.Text = "127.0.0.1";
+            this.mtbtnLocalIp.UseVisualStyleBackColor = true;
+            this.mtbtnLocalIp.CheckedChanged += new System.EventHandler(this.MtbtnLocalIp_CheckedChanged);
+            // 
+            // mtbtnAny
+            // 
+            this.mtbtnAny.AutoSize = true;
+            this.mtbtnAny.Checked = true;
+            this.mtbtnAny.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.mtbtnAny.Location = new System.Drawing.Point(424, 115);
+            this.mtbtnAny.Margin = new System.Windows.Forms.Padding(0);
+            this.mtbtnAny.Name = "mtbtnAny";
+            this.mtbtnAny.Size = new System.Drawing.Size(50, 21);
+            this.mtbtnAny.TabIndex = 3;
+            this.mtbtnAny.TabStop = true;
+            this.mtbtnAny.Text = "Any";
+            this.mtbtnAny.UseVisualStyleBackColor = true;
+            this.mtbtnAny.CheckedChanged += new System.EventHandler(this.MtbtnAny_CheckedChanged);
             // 
             // mlblStatu
             // 
             this.mlblStatu.AutoSize = true;
-            this.mlblStatu.Depth = 0;
-            this.mlblStatu.Font = new System.Drawing.Font("Roboto", 11F);
+            this.mlblStatu.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
             this.mlblStatu.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.mlblStatu.Location = new System.Drawing.Point(33, 41);
-            this.mlblStatu.MouseState = MaterialSkin.MouseState.HOVER;
             this.mlblStatu.Name = "mlblStatu";
-            this.mlblStatu.Size = new System.Drawing.Size(0, 19);
+            this.mlblStatu.Size = new System.Drawing.Size(0, 18);
             this.mlblStatu.TabIndex = 2;
             // 
             // mrbtnStopServer
             // 
-            this.mrbtnStopServer.Depth = 0;
             this.mrbtnStopServer.Enabled = false;
             this.mrbtnStopServer.Location = new System.Drawing.Point(213, 115);
-            this.mrbtnStopServer.MouseState = MaterialSkin.MouseState.HOVER;
             this.mrbtnStopServer.Name = "mrbtnStopServer";
-            this.mrbtnStopServer.Primary = true;
             this.mrbtnStopServer.Size = new System.Drawing.Size(145, 86);
             this.mrbtnStopServer.TabIndex = 1;
             this.mrbtnStopServer.Text = "Stop Server";
@@ -218,11 +299,8 @@ namespace GuessToNumber.Server
             // 
             // mrbtnStartServer
             // 
-            this.mrbtnStartServer.Depth = 0;
             this.mrbtnStartServer.Location = new System.Drawing.Point(37, 115);
-            this.mrbtnStartServer.MouseState = MaterialSkin.MouseState.HOVER;
             this.mrbtnStartServer.Name = "mrbtnStartServer";
-            this.mrbtnStartServer.Primary = true;
             this.mrbtnStartServer.Size = new System.Drawing.Size(145, 86);
             this.mrbtnStartServer.TabIndex = 0;
             this.mrbtnStartServer.Text = "Start Server";
@@ -235,9 +313,19 @@ namespace GuessToNumber.Server
             this.tpClient1.Controls.Add(this.ucTestClient2);
             this.tpClient1.Location = new System.Drawing.Point(4, 28);
             this.tpClient1.Name = "tpClient1";
-            this.tpClient1.Size = new System.Drawing.Size(1192, 512);
+            this.tpClient1.Size = new System.Drawing.Size(1192, 626);
             this.tpClient1.TabIndex = 3;
             this.tpClient1.Text = "Test Client 1";
+            // 
+            // ucTestClient2
+            // 
+            this.ucTestClient2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ucTestClient2.Font = new System.Drawing.Font("Consolas", 12F);
+            this.ucTestClient2.Location = new System.Drawing.Point(0, 0);
+            this.ucTestClient2.Margin = new System.Windows.Forms.Padding(4);
+            this.ucTestClient2.Name = "ucTestClient2";
+            this.ucTestClient2.Size = new System.Drawing.Size(1192, 626);
+            this.ucTestClient2.TabIndex = 0;
             // 
             // tpClient2
             // 
@@ -245,42 +333,25 @@ namespace GuessToNumber.Server
             this.tpClient2.Controls.Add(this.ucTestClient1);
             this.tpClient2.Location = new System.Drawing.Point(4, 28);
             this.tpClient2.Name = "tpClient2";
-            this.tpClient2.Size = new System.Drawing.Size(1192, 512);
+            this.tpClient2.Size = new System.Drawing.Size(1192, 626);
             this.tpClient2.TabIndex = 4;
             this.tpClient2.Text = "Test Client 2";
             // 
-            // mts
-            // 
-            this.mts.BaseTabControl = this.mtc;
-            this.mts.Depth = 0;
-            this.mts.Location = new System.Drawing.Point(0, 65);
-            this.mts.MouseState = MaterialSkin.MouseState.HOVER;
-            this.mts.Name = "mts";
-            this.mts.Size = new System.Drawing.Size(1200, 43);
-            this.mts.TabIndex = 1;
-            // 
             // ucTestClient1
             // 
-            this.ucTestClient1.Location = new System.Drawing.Point(9, 4);
-            this.ucTestClient1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ucTestClient1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ucTestClient1.Font = new System.Drawing.Font("Consolas", 12F);
+            this.ucTestClient1.Location = new System.Drawing.Point(0, 0);
+            this.ucTestClient1.Margin = new System.Windows.Forms.Padding(4);
             this.ucTestClient1.Name = "ucTestClient1";
-            this.ucTestClient1.Size = new System.Drawing.Size(1150, 500);
+            this.ucTestClient1.Size = new System.Drawing.Size(1192, 626);
             this.ucTestClient1.TabIndex = 0;
-            // 
-            // ucTestClient2
-            // 
-            this.ucTestClient2.Location = new System.Drawing.Point(9, 4);
-            this.ucTestClient2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.ucTestClient2.Name = "ucTestClient2";
-            this.ucTestClient2.Size = new System.Drawing.Size(1150, 500);
-            this.ucTestClient2.TabIndex = 0;
             // 
             // WFMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 658);
-            this.Controls.Add(this.mts);
             this.Controls.Add(this.mtc);
             this.Font = new System.Drawing.Font("Consolas", 12F);
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -302,23 +373,29 @@ namespace GuessToNumber.Server
 
         #endregion
 
-        private MaterialSkin.Controls.MaterialTabControl mtc;
-        private MaterialSkin.Controls.MaterialTabSelector mts;
+        private TabControl mtc;
         private System.Windows.Forms.TabPage mtpLog;
         private System.Windows.Forms.TabPage mtpLobbies;
         private System.Windows.Forms.TabPage mtpStatus;
-        private MaterialSkin.Controls.MaterialRaisedButton mrbtnStartServer;
-        private MaterialSkin.Controls.MaterialRaisedButton mrbtnStopServer;
-        private MaterialSkin.Controls.MaterialLabel mlblStatu;
+        private Button mrbtnStartServer;
+        private Button mrbtnStopServer;
+        private Label mlblStatu;
         private System.Windows.Forms.RichTextBox rtbxLog;
         private System.Windows.Forms.TreeView twLobbies;
-        private MaterialSkin.Controls.MaterialLabel mlblClientCount;
-        private MaterialSkin.Controls.MaterialLabel mlblLobbyCount;
-        private MaterialSkin.Controls.MaterialFlatButton mfbtnRefreshLobbies;
-        private MaterialSkin.Controls.MaterialCheckBox mchbxScrollToEnd;
+        private Label mlblClientCount;
+        private Label mlblLobbyCount;
+        private Button mfbtnRefreshLobbies;
+        private CheckBox mchbxScrollToEnd;
         private System.Windows.Forms.TabPage tpClient1;
         private System.Windows.Forms.TabPage tpClient2;
         private UCTestClient ucTestClient1;
         private UCTestClient ucTestClient2;
+        private RadioButton mtbtnLocalHost;
+        private RadioButton mtbtnLocalIp;
+        private RadioButton mtbtnAny;
+        private RadioButton mtbtnCustom;
+        private TextBox msltfCustomIp;
+        private Label mlblPort;
+        private TextBox msltfPort;
     }
 }

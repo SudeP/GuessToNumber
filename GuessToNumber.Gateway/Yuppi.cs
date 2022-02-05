@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -7,12 +8,10 @@ using System.Threading.Tasks;
 
 namespace GuessToNumber.Gateway
 {
-    public abstract class Yuppi : ISocket
+    public abstract class Yuppi : ISocket, IDisposable
     {
         internal Yuppi(IPEndPoint ipEndPoint, Encoding encoding)
         {
-            Send = new YuppiPipeLine(this);
-            receiveHandleTasks = new ConcurrentDictionary<uint, CancellationTokenSource>();
             IpEndPoint = ipEndPoint;
             Encoding = encoding;
         }
@@ -79,21 +78,42 @@ namespace GuessToNumber.Gateway
         public YuppiSocket Pipline { get; protected set; }
         public virtual event YuppiLogHandler OnLog;
         protected event RecieveListenHandler OnRecieveListen;
-        private readonly ConcurrentDictionary<uint, CancellationTokenSource> receiveHandleTasks;
+        private ConcurrentDictionary<uint, CancellationTokenSource> receiveHandleTaskCancellationTokenSources;
+        private ConcurrentDictionary<uint, Task> receiveHandleTasks;
 
         public virtual void Start()
         {
+            receiveHandleTaskCancellationTokenSources = new ConcurrentDictionary<uint, CancellationTokenSource>();
+            receiveHandleTasks = new ConcurrentDictionary<uint, Task>();
             SocketCreate();
+            Send = new YuppiPipeLine(this);
         }
 
         public virtual void Stop()
         {
             DestorySocket(Pipline);
 
+            if (receiveHandleTaskCancellationTokenSources != null)
+                foreach (var source in receiveHandleTaskCancellationTokenSources)
+                    if (source.Value != null && !source.Value.IsCancellationRequested)
+                    {
+                        source.Value.Cancel(false);
+                        source.Value.Dispose();
+                    }
+
+            if (receiveHandleTaskCancellationTokenSources != null)
+            {
+                receiveHandleTaskCancellationTokenSources.Clear();
+                receiveHandleTaskCancellationTokenSources = null;
+            }
             if (receiveHandleTasks != null)
-                foreach (var task in receiveHandleTasks)
-                    if (task.Value != null && task.Value.IsCancellationRequested)
-                        task.Value.Cancel(false);
+            {
+                receiveHandleTasks.Clear();
+                receiveHandleTasks = null;
+            }
+
+            GC.Collect();
+            GC.SuppressFinalize(this);
         }
 
         protected void SocketCreate()
@@ -113,11 +133,12 @@ namespace GuessToNumber.Gateway
         {
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-            if (receiveHandleTasks.TryAdd(id, cancellationTokenSource))
+            if (receiveHandleTaskCancellationTokenSources.TryAdd(id, cancellationTokenSource))
             {
                 Task receiveHandleTask = new Task(ReceiveHandle, socket, cancellationTokenSource.Token);
 
-                receiveHandleTask.Start();
+                if (receiveHandleTasks.TryAdd(id, receiveHandleTask))
+                    receiveHandleTask.Start();
             }
             else
                 OnLog?.Invoke("Receive listener not be create, Thread Exception.", "StartListen", true);
@@ -125,46 +146,80 @@ namespace GuessToNumber.Gateway
 
         private void ReceiveHandle(object socketObject)
         {
-            YuppiSocket socket = socketObject as YuppiSocket;
+            YuppiSocket pipeLine = socketObject as YuppiSocket;
 
             while (IsSocketConnected())
             {
-                string jsonText = string.Empty;
-
-                do
+                try
                 {
-                    byte[] buffer = new byte[1024];
+                    string jsonText = string.Empty;
 
-                    socket.Socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
+                    do
+                    {
+                        byte[] buffer = new byte[1024];
 
-                    jsonText += buffer.ToString(Encoding);
+                        pipeLine.Socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
 
-                } while (socket.Socket.Available > 0);
+                        jsonText += buffer.ToString(Encoding);
 
-                if (jsonText.JsonObject(out SocketData socketData))
-                    OnRecieveListen?.Invoke(socketData, socket);
+                    } while (pipeLine.Socket.Available > 0);
+
+                    if (jsonText.JsonObject(out SocketData socketData))
+                        OnRecieveListen?.Invoke(socketData, pipeLine);
+                }
+                catch (Exception ex)
+                {
+                    OnLog?.Invoke(ex.Message, "ReceiveHandle", true);
+                }
             }
+            if (IsClient)
+                Stop();
+            else
+                DestorySocket(pipeLine);
         }
 
         protected void DestorySocket(YuppiSocket trash)
         {
-            if (trash != null)
+            try
             {
-                if (trash.Socket.Connected)
-                    trash.Socket.Disconnect(false);
+                if (trash != null)
+                {
+                    if (trash.Socket.Connected)
+                        trash.Socket.Disconnect(false);
 
-                trash.Socket.Dispose();
+                    trash.Socket.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                OnLog?.Invoke(ex.Message, "IsSocketConnected", true);
             }
         }
 
         protected bool IsSocketConnected()
         {
-            bool part1 = Pipline.Socket.Poll(1000, SelectMode.SelectRead);
-            bool part2 = (Pipline.Socket.Available == 0);
-            if (part1 && part2)
+            try
+            {
+                bool part1 = Pipline.Socket.Poll(1000, SelectMode.SelectRead);
+                bool part2 = (Pipline.Socket.Available == 0);
+                if (part1 && part2)
+                    return false;
+                else
+                    return true;
+            }
+            catch (Exception ex)
+            {
+                OnLog?.Invoke(ex.Message, "IsSocketConnected", true);
                 return false;
-            else
-                return true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Stop();
+
+            GC.Collect();
+            GC.SuppressFinalize(this);
         }
     }
 }
