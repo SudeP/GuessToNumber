@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -77,7 +76,8 @@ namespace GuessToNumber.Gateway
         }
 
         public YuppiPipeLine Send { get; protected set; }
-        public YuppiSocket Socket { get; protected set; }
+        public YuppiSocket Pipline { get; protected set; }
+        public virtual event YuppiLogHandler OnLog;
         protected event RecieveListenHandler OnRecieveListen;
         private readonly ConcurrentDictionary<uint, CancellationTokenSource> receiveHandleTasks;
 
@@ -86,9 +86,9 @@ namespace GuessToNumber.Gateway
             SocketCreate();
         }
 
-        protected virtual void Stop()
+        public virtual void Stop()
         {
-            DestorySocket(Socket);
+            DestorySocket(Pipline);
 
             if (receiveHandleTasks != null)
                 foreach (var task in receiveHandleTasks)
@@ -98,9 +98,15 @@ namespace GuessToNumber.Gateway
 
         protected void SocketCreate()
         {
-            Socket = new YuppiSocket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            Pipline = new YuppiSocket(SocketType.Stream, ProtocolType.Tcp);
 
-            Socket.Connect(IpEndPoint);
+            if (IsClient)
+                Pipline.Socket.Connect(IpEndPoint);
+            else
+            {
+                Pipline.Socket.Bind(IpEndPoint);
+                Pipline.Socket.Listen(100);
+            }
         }
 
         protected void StartListen(uint id, YuppiSocket socket)
@@ -114,7 +120,7 @@ namespace GuessToNumber.Gateway
                 receiveHandleTask.Start();
             }
             else
-                throw new InvalidOperationException("Receive listener not be create, Thread Exception.");
+                OnLog?.Invoke("Receive listener not be create, Thread Exception.", "StartListen", true);
         }
 
         private void ReceiveHandle(object socketObject)
@@ -129,11 +135,11 @@ namespace GuessToNumber.Gateway
                 {
                     byte[] buffer = new byte[1024];
 
-                    socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
+                    socket.Socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
 
                     jsonText += buffer.ToString(Encoding);
 
-                } while (socket.Available > 0);
+                } while (socket.Socket.Available > 0);
 
                 if (jsonText.JsonObject(out SocketData socketData))
                     OnRecieveListen?.Invoke(socketData, socket);
@@ -144,13 +150,21 @@ namespace GuessToNumber.Gateway
         {
             if (trash != null)
             {
-                if (trash.Connected)
-                    trash.Disconnect(false);
+                if (trash.Socket.Connected)
+                    trash.Socket.Disconnect(false);
 
-                trash.Dispose();
+                trash.Socket.Dispose();
             }
         }
 
-        protected bool IsSocketConnected() => !((Socket.Poll(1000, SelectMode.SelectRead) && (Socket.Available == 0)) || !Socket.Connected);
+        protected bool IsSocketConnected()
+        {
+            bool part1 = Pipline.Socket.Poll(1000, SelectMode.SelectRead);
+            bool part2 = (Pipline.Socket.Available == 0);
+            if (part1 && part2)
+                return false;
+            else
+                return true;
+        }
     }
 }

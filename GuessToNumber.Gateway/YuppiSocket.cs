@@ -2,13 +2,18 @@
 
 namespace GuessToNumber.Gateway
 {
-    public class YuppiSocket : Socket
+    public class YuppiSocket
     {
         public uint Id { get; set; }
         public string AuthorizationKey { get; set; }
-        public YuppiSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType) : base(addressFamily, socketType, protocolType)
+        public Socket Socket { get; set; }
+        public YuppiSocket(Socket socket)
         {
-
+            Socket = socket;
+        }
+        public YuppiSocket(SocketType socketType, ProtocolType protocolType)
+        {
+            Socket = new Socket(socketType, protocolType);
         }
     }
 }

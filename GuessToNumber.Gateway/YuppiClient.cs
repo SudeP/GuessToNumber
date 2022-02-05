@@ -1,7 +1,7 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace GuessToNumber.Gateway
 {
@@ -9,10 +9,11 @@ namespace GuessToNumber.Gateway
     {
         public YuppiClient(IPEndPoint iPEndPoint, Encoding encoding) : base(iPEndPoint, encoding)
         {
-
+            IsClient = true;
             OnRecieveListen += YuppiClient_OnHandleRecieve;
         }
 
+        public override event YuppiLogHandler OnLog;
         public event RecieveClientHandler OnRecieveClient;
         public string AuthorizationKey { get; set; }
 
@@ -20,60 +21,82 @@ namespace GuessToNumber.Gateway
         {
             base.Start();
 
-            HandleClientId();
+            Task.Factory.StartNew(() =>
+            {
+                if (HandleClientId())
+                    return;
 
-            StartListen(Id, Socket);
+                StartListen(Id, Pipline);
+            });
         }
 
         public void CreateLobby(LobbySettings lobbySettings)
         {
-            ControlAny(lobbySettings.AuthorizationKey);
+            if (ControlAny(lobbySettings.AuthorizationKey))
+                return;
 
             if (lobbySettings.Capacity <= 0)
-                throw new Exception("Please bro. Capacity greater from ZERO, okkey!.");
+            {
+                OnLog?.Invoke("Please bro. Capacity greater from ZERO, okkey!.", "CreateLobby", true);
+                return;
+            }
 
-            Socket.Send(new SocketData(Id, SpecificIdentity.CreateLobby, lobbySettings).JsonString().ToByteArray(Encoding));
+            Pipline.Socket.Send(new SocketData(Id, SpecificIdentity.CreateLobby, lobbySettings).JsonString().ToByteArray(Encoding));
         }
 
         public void JoinLobby(string authorizationKey)
         {
-            ControlAny(authorizationKey);
+            if (ControlAny(authorizationKey))
+                return;
 
-            Socket.Send(new SocketData(Id, SpecificIdentity.JoinLobby, authorizationKey).JsonString().ToByteArray(Encoding));
+            Pipline.Socket.Send(new SocketData(Id, SpecificIdentity.JoinLobby, authorizationKey).JsonString().ToByteArray(Encoding));
         }
 
-        private void ControlAny(string authorizationKey)
+        private bool ControlAny(string authorizationKey)
         {
             if (Id == 0)
-                throw new Exception("Id is null. Firstly call Start method");
+            {
+                OnLog?.Invoke("Id is null. Firstly call Start method", "ControlAny", true);
+                return true;
+            }
 
             if (string.IsNullOrEmpty(authorizationKey) || string.IsNullOrWhiteSpace(authorizationKey))
-                throw new ArgumentNullException("authorizationKey");
+            {
+                OnLog?.Invoke("'authorizationKey' is null. not be null", "ControlAny", true);
+                return true;
+            }
 
             AuthorizationKey = authorizationKey;
+            return false;
         }
 
-        private void YuppiClient_OnHandleRecieve(SocketData socketData, Socket handledSocket)
+        private void YuppiClient_OnHandleRecieve(SocketData socketData, YuppiSocket handledSocket)
         {
-                OnRecieveClient?.Invoke(socketData);
+            OnRecieveClient?.Invoke(socketData);
         }
 
-        private void HandleClientId()
+        private bool HandleClientId()
         {
 
             byte[] buffer = new byte[uint.MaxValue.ToString().ToByteArray(Encoding).Length];
 
-            Socket.Receive(buffer);
+            Pipline.Socket.Receive(buffer);
 
             if (byte.TryParse(buffer.ToString(Encoding), out byte clientId))
             {
                 Id = clientId;
-                Socket.Id = Id;
+                Pipline.Id = Id;
 
-                Socket.Send(clientId.ToString().ToByteArray(Encoding));
+                Pipline.Socket.Send(clientId.ToString().ToByteArray(Encoding));
+
+                return false;
             }
             else
-                throw new Exception("Handle socket error [server didn't give id to client]");
+            {
+                OnLog?.Invoke("Handle socket error [server didn't give id to client]", "HandleClientId", true);
+
+                return true;
+            }
         }
     }
 }
