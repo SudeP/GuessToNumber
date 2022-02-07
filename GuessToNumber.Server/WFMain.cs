@@ -26,7 +26,6 @@ namespace GuessToNumber.Server
         private void Server_OnRecieveServer(SocketData socketData, ISocket handledSocket)
         {
             Log(socketData.JsonString(), "Server_OnRecieveServer", false);
-
         }
         #endregion
 
@@ -66,6 +65,11 @@ namespace GuessToNumber.Server
 
         private void WFMain_FormClosing(object sender, FormClosingEventArgs e)
         {
+            KillServer();
+        }
+
+        private void KillServer()
+        {
             if (server != null)
             {
                 server.Stop();
@@ -74,16 +78,12 @@ namespace GuessToNumber.Server
 
                 server.OnRecieveServer -= Server_OnRecieveServer;
 
-                server.Dispose();
+                server = null;
             }
         }
 
-        private void MrbtnStartServer_Click(object sender, EventArgs e)
+        private void CreateServer()
         {
-            mrbtnStartServer.Enabled = false;
-            mrbtnStopServer.Enabled = true;
-
-
             server = new YuppiServer(new IPEndPoint(ipAddress, port), Encoding.UTF8);
 
             server.OnLog += Server_OnLog;
@@ -91,6 +91,14 @@ namespace GuessToNumber.Server
             server.OnRecieveServer += Server_OnRecieveServer;
 
             server.Start();
+        }
+
+        private void MrbtnStartServer_Click(object sender, EventArgs e)
+        {
+            mrbtnStartServer.Enabled = false;
+            mrbtnStopServer.Enabled = true;
+
+            CreateServer();
 
             mlblStatu.Text = $@"Runnig";
             mlblStatu.ForeColor = Color.Green;
@@ -101,13 +109,7 @@ namespace GuessToNumber.Server
             mrbtnStartServer.Enabled = true;
             mrbtnStopServer.Enabled = false;
 
-            server.Stop();
-
-            server.OnLog -= Server_OnLog;
-
-            server.OnRecieveServer -= Server_OnRecieveServer;
-
-            server.Dispose();
+            KillServer();
 
             mlblStatu.Text = $@"Stopped";
             mlblStatu.ForeColor = Color.Red;

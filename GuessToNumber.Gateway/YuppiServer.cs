@@ -40,10 +40,6 @@ namespace GuessToNumber.Gateway
                         DestorySocket(socket.Value);
 
 
-            lobbies.Clear();
-            sockets.Clear();
-            lobbies = null;
-            sockets = null;
             OnRecieveListen -= YuppiServer_OnHandleRecieve;
         }
 

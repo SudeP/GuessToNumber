@@ -16,11 +16,6 @@ namespace GuessToNumber.Gateway
             Encoding = encoding;
         }
 
-        ~Yuppi()
-        {
-            Stop();
-        }
-
         IPEndPoint ISocket.IpEndPoint { get; set; }
         Encoding ISocket.Encoding { get; set; }
         bool ISocket.IsClient { get; set; }
@@ -106,14 +101,12 @@ namespace GuessToNumber.Gateway
                 receiveHandleTaskCancellationTokenSources.Clear();
                 receiveHandleTaskCancellationTokenSources = null;
             }
+
             if (receiveHandleTasks != null)
             {
                 receiveHandleTasks.Clear();
                 receiveHandleTasks = null;
             }
-
-            GC.Collect();
-            GC.SuppressFinalize(this);
         }
 
         protected void SocketCreate()
@@ -217,9 +210,6 @@ namespace GuessToNumber.Gateway
         public void Dispose()
         {
             Stop();
-
-            GC.Collect();
-            GC.SuppressFinalize(this);
         }
     }
 }
