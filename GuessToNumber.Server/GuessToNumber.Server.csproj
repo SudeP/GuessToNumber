@@ -93,6 +93,10 @@
       <Project>{8096c956-5e1c-4145-99d7-eb759fdd0678}</Project>
       <Name>GuessToNumber.Gateway</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Yuppi\Yuppi.csproj">
+      <Project>{e8700323-bcaf-40ae-973b-da98edf11391}</Project>
+      <Name>Yuppi</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
