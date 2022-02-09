@@ -16,7 +16,7 @@ namespace GuessToNumber.Server
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new WFMain());
+            Application.Run(new YuppiTest());
         }
     }
 }

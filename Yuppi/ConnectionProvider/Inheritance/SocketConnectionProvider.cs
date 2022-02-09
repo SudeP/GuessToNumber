@@ -14,6 +14,8 @@ namespace Yuppi.ConnectionProvider.Inheritance
             if (socket is null)
                 throw new ArgumentNullException(nameof(socket));
 
+            socket.NoDelay = true;
+
             this.socket = socket;
 
             if (socketBandwidth == 0 || socketBandwidth > socket.ReceiveBufferSize)
@@ -85,9 +87,14 @@ namespace Yuppi.ConnectionProvider.Inheritance
 
         public void Disconnect()
         {
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Disconnect(false);
-            socket.Close(3);
+            if (socket.Connected)
+                socket.Shutdown(SocketShutdown.Both);
+
+            if (socket.Connected)
+                socket.Disconnect(false);
+
+            socket.Close(1);
+
             socket.Dispose();
         }
     }

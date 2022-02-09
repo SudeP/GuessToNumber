@@ -24,9 +24,12 @@ namespace Yuppi.Networking.Inheritance
         public KeyValueSync<uint, SocketClient> clients;
         public event OnAcceptDelegate OnAccept;
         public override event OnReceiveDelegate<P2PMessage> OnReceive;
-
+        public override event OnLogDelegate OnLog;
         public void Start()
         {
+            if (LogLevel.IsEnabled(LogType.Info))
+                OnLog?.Invoke(this, "Start Server", Extensions.StackFrameDetail(), LogType.Info);
+
             pipeline.Provider.Socket.Bind(ipEndPoint);
             pipeline.Provider.Socket.Listen(100);
 
@@ -37,6 +40,9 @@ namespace Yuppi.Networking.Inheritance
         private void HandleSocket()
         {
             Socket newSocket = pipeline.AcceptNewConnection();
+
+            if (LogLevel.IsEnabled(LogType.Log))
+                OnLog?.Invoke(this, string.Format("Handle new Socket. Ip : {0}", newSocket.RemoteEndPoint.ToString()), Extensions.StackFrameDetail(), LogType.Log);
 
             uint newIdentity = identifier.GetNewIdentity();
 
@@ -53,6 +59,9 @@ namespace Yuppi.Networking.Inheritance
 
         private void HandleClientReceive(P2PMessage message)
         {
+            if (LogLevel.IsEnabled(LogType.Info))
+                OnLog?.Invoke(this, serializer.Serialize(message), Extensions.StackFrameDetail(), LogType.Info);
+
             if (IdentityCheck(message.source))
                 OnReceive?.Invoke(message);
         }
@@ -62,16 +71,16 @@ namespace Yuppi.Networking.Inheritance
             if (!identifier.IsCorrect(id))
                 return false;
 
-            foreach (SpecialId specialId in Identifier.specialIdList)
+            foreach (SpecialId specialId in identifier.specialIdList)
             {
                 if ((uint)specialId == id)
-                    return false;
+                    return true;
             }
 
-            if (!clients.Has(id))
-                return false;
+            if (clients.Has(id))
+                return true;
 
-            return true;
+            return false;
         }
     }
 }

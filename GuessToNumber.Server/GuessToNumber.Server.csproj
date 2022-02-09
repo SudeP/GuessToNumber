@@ -60,20 +60,30 @@
     <Compile Include="WFMain.Designer.cs">
       <DependentUpon>WFMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="YuppiTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="YuppiTest.Designer.cs">
+      <DependentUpon>YuppiTest.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="UCTestClient.resx">
       <DependentUpon>UCTestClient.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WFMain.resx">
       <DependentUpon>WFMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="YuppiTest.resx">
+      <DependentUpon>YuppiTest.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -97,6 +107,9 @@
       <Project>{e8700323-bcaf-40ae-973b-da98edf11391}</Project>
       <Name>Yuppi</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bg.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

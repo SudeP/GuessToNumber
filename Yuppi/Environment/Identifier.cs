@@ -1,18 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace Yuppi.Environment
 {
     public class Identifier
     {
-        public const uint IdentitySeed = 100;
-        public static List<SpecialId> specialIdList =  Enum.GetValues(typeof(SpecialId)).Cast<SpecialId>().ToList();
+        public Identifier()
+        {
+            specialIdList = Extensions.ToList<SpecialId>();
+        }
+
         private uint lastNewIdentity = IdentitySeed;
+
+        public const uint IdentitySeed = 100;
+
+        public readonly List<SpecialId> specialIdList;
+
         public uint GetNewIdentity()
         {
             return ++lastNewIdentity;
         }
+
         public bool IsCorrect(uint identity)
         {
             return identity > ((int)SpecialId.Server) && uint.MaxValue > identity;

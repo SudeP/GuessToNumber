@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Web.Script.Serialization;
+using Yuppi.Environment;
 using Yuppi.Serializer.Interface;
 
 namespace Yuppi.Serializer.Inheritance
@@ -13,14 +14,14 @@ namespace Yuppi.Serializer.Inheritance
         public JsonSocketSerializer(Encoding parserEncoding, JavaScriptTypeResolver javaScriptTypeResolver)
         {
             encoding = parserEncoding;
-            serializer = new JavaScriptSerializer(javaScriptTypeResolver);
+            serializer = new JSONSerializer(javaScriptTypeResolver);
         }
 
         private readonly Encoding encoding;
-        private readonly JavaScriptSerializer serializer;
+        private readonly JSONSerializer serializer;
 
         public Encoding Encoding => encoding;
-        public JavaScriptSerializer Serializer => serializer;
+        public JSONSerializer Serializer => serializer;
 
         public byte[] Serialize(T t)
         {

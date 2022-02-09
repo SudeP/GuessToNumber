@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
+using Yuppi.Delegates;
 using Yuppi.Environment;
+using Yuppi.Networking.Abstract;
 using Yuppi.Networking.Inheritance;
 using Yuppi.Struct;
 
@@ -14,12 +16,28 @@ namespace Yuppi.Manager.SocketLobbyManagement
 
             server.OnReceive += Server_OnReceive;
 
+            server.OnAccept += Server_OnAccept;
+
+            server.OnLog += SocketOnLog;
+
             lobbies = new KeyValueSync<string, SocketLobby>();
         }
 
         public readonly SocketServer server;
 
         public readonly KeyValueSync<string, SocketLobby> lobbies;
+
+        public event OnLogDelegate OnLog;
+
+        private void SocketOnLog(object sender, string message, string stackTrace, LogType type)
+        {
+            OnLog?.Invoke(sender, string.Format("{0} : {1}", ((SocketNode)sender).Identity, message), stackTrace, type);
+        }
+
+        private void Server_OnAccept(SocketClient client)
+        {
+            client.OnLog += SocketOnLog;
+        }
 
         private void Server_OnReceive(P2PMessage request)
         {
@@ -29,7 +47,7 @@ namespace Yuppi.Manager.SocketLobbyManagement
             {
                 P2PMessage responseMessage = CreateANewLobby(request, client);
 
-                client.pipeline.SendAnyData(responseMessage);
+                client.Send(responseMessage);
 
                 return;
             }
@@ -37,7 +55,7 @@ namespace Yuppi.Manager.SocketLobbyManagement
             {
                 P2PMessage responseMessage = JoinLobbyByAuthKey(request, client);
 
-                client.pipeline.SendAnyData(responseMessage);
+                client.Send(responseMessage);
 
                 return;
             }
@@ -161,7 +179,7 @@ namespace Yuppi.Manager.SocketLobbyManagement
                 if (withoutMe && request.source == client.Key)
                     continue;
 
-                client.Value.pipeline.SendAnyData(request);
+                client.Value.Send(request);
             }
         }
 
@@ -177,7 +195,7 @@ namespace Yuppi.Manager.SocketLobbyManagement
             if (targetSocketClient is null)
                 return;
 
-            targetSocketClient.pipeline.SendAnyData(request);
+            targetSocketClient.Send(request);
         }
 
         public void Dispose()
