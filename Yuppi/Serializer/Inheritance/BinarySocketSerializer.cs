@@ -10,7 +10,9 @@ namespace Yuppi.Serializer.Inheritance
         {
             serializer = new BinaryFormatter();
         }
+
         private readonly BinaryFormatter serializer;
+
         public byte[] Serialize(T t)
         {
             byte[] byteArray;

@@ -1,6 +1,4 @@
-﻿using System.Net.Sockets;
-
-namespace Yuppi.Delegates
+﻿namespace Yuppi.Delegates
 {
-    public delegate void AcceptSocket(Socket socket);
+    public delegate void AcceptNewConnection<T>(T socket);
 }

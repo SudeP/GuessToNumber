@@ -1,22 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
-using Yuppi.Buffer.Interface;
+using Yuppi.ConnectionProvider.Interface;
 using Yuppi.Environment;
 
-namespace Yuppi.Buffer.Inheritance
+namespace Yuppi.ConnectionProvider.cs.Inheritance
 {
-    public class SocketByteProvider : IByteProvider
+    public class StreamConnectionProvider : IConnectionProvider<Socket>
     {
-        public SocketByteProvider(Socket socket, int socketBandwidth = Default.Bandwidth)
+        public StreamConnectionProvider(Socket socket, int socketBandwidth = Default.Bandwidth)
         {
             this.socket = socket;
+
+            stream = new NetworkStream(socket);
+
             bandwidth = socketBandwidth;
         }
+
         private readonly Socket socket;
         private readonly int bandwidth;
+        private readonly NetworkStream stream;
+
         public Socket Socket => socket;
         public int Bandwidth => bandwidth;
+
         public void Write(byte[] buffer)
         {
             int offset = 0;
@@ -28,16 +35,12 @@ namespace Yuppi.Buffer.Inheritance
 
                 remaining -= remaining < bandwidth ? remaining : bandwidth;
 
-                socket.Send(buffer, offset, size, SocketFlags.None, out SocketError socketError);
-
-                if (socketError != SocketError.Success)
-                {
-                    throw new SocketException((int)socketError);
-                }
+                stream.Write(buffer, offset, size);
 
                 offset += bandwidth;
             }
         }
+
         public byte[] Read()
         {
             IEnumerable<byte> tempory = new byte[0];
@@ -48,12 +51,7 @@ namespace Yuppi.Buffer.Inheritance
             {
                 byte[] buffer = new byte[bandwidth];
 
-                int receieved = socket.Receive(buffer, 0, bandwidth, SocketFlags.None, out SocketError socketError);
-
-                if (socketError != SocketError.Success)
-                {
-                    throw new SocketException((int)socketError);
-                }
+                int receieved = stream.Read(buffer, 0, buffer.Length);
 
                 size += receieved;
 
@@ -63,11 +61,20 @@ namespace Yuppi.Buffer.Inheritance
 
             return tempory.ToArray();
         }
+
         public Socket Accept()
         {
             Socket acceptSocket = socket.Accept();
 
             return acceptSocket;
+        }
+
+        public void Disconnect()
+        {
+            socket.Shutdown(SocketShutdown.Both);
+            socket.Disconnect(false);
+            socket.Close(3);
+            socket.Dispose();
         }
     }
 }

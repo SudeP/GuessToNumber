@@ -14,7 +14,6 @@ namespace GuessToNumber.Gateway
         public override event YuppiLogHandler OnLog;
         public event RecieveClientHandler OnRecieveClient;
         public string AuthorizationKey { get; set; }
-
         public override void Start()
         {
             OnRecieveListen += YuppiClient_OnHandleRecieve;

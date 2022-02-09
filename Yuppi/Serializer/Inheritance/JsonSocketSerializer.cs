@@ -9,13 +9,16 @@ namespace Yuppi.Serializer.Inheritance
         public JsonSocketSerializer(Encoding parserEncoding) : this(parserEncoding, null)
         {
         }
+
         public JsonSocketSerializer(Encoding parserEncoding, JavaScriptTypeResolver javaScriptTypeResolver)
         {
             encoding = parserEncoding;
             serializer = new JavaScriptSerializer(javaScriptTypeResolver);
         }
+
         private readonly Encoding encoding;
         private readonly JavaScriptSerializer serializer;
+
         public Encoding Encoding => encoding;
         public JavaScriptSerializer Serializer => serializer;
 

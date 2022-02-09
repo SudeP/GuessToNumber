@@ -11,8 +11,11 @@ namespace Yuppi.Struct
             destination = __destination;
             data = __data;
         }
+
         public uint source;
+
         public uint destination;
+
         public object data;
     }
 }
